@@ -1,14 +1,16 @@
 class Character():
-    def __init__(self):
-        self.element = None
-        self.health = None
-        self.attack = None
-        self.defense = None
-        self.elemental_mastery = None
-        self.crit_rate = None
-        self.crit_damage = None
-        self.energy_recharge = None
-        self.constellation = None
+    def __init__(self, name, element, lvl, health, attack, defense, elemental_mastery, crit_rate, crit_damage, energy_recharge, constellation):
+        self.name = name
+        self.element = element
+        self.lvl = lvl
+        self.health = health
+        self.attack = attack
+        self.defense = defense
+        self.elemental_mastery = elemental_mastery
+        self.crit_rate = crit_rate
+        self.crit_damage = crit_damage
+        self.energy_recharge = energy_recharge
+        self.constellation = constellation
 
 
     def use_ability(self):
