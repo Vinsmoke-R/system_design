@@ -37,14 +37,14 @@ class Parking_spot:
     def __init__(self,parking,Vehicle):
         self.parking = parking
 
-    def is_available():
+    def is_available(self):
         pass
 
 class BikeParking(Parking_spot):
     def __init__(self):
         self.parking = parking
 
-    def is_available():
+    def is_available(self):
         for i in parking:
             if parking[i]["BIKE"]>0:
                 return True
@@ -53,14 +53,17 @@ class BikeParking(Parking_spot):
 
 
 
-class Vehicle:
-    def __init__(self):
-        self.owner_name = ""
-        self.num_plate = ""
+class Vehicle(ABC):
+    def __init__(self,owner_name,num_plate):
+        self.owner_name = owner_name
+        self.num_plate = num_plate
 
     @abstractmethod
     def get_type(self):
         pass
+
+    def __repr__(self):
+        return f"{self.get_type()} -> {self.num_plate} enters at {datetime.now()}"
 
 class Bike(Vehicle):
     def get_type(self):
@@ -76,22 +79,31 @@ class Truck(Vehicle):
 
 
 class Ticket():
-    def __init__(self,Vehicle):
-        self.name = Vehicle.name
-        self.num_plate = Vehicle.num_plate
-        self.vehicle_type = Vehicle.get_type()
-        self.entry_time = datetime.now
+    def __init__(self,vehicle : Vehicle):
+        self.name = vehicle.owner_name
+        self.num_plate = vehicle.num_plate
+        self.vehicle_type = vehicle.get_type()
+        self.entry_time = datetime.now()
         self.exit_time = None
-        self.type = self.get_type()
+        self.type = vehicle.get_type()
         self.fee = None
         self.spot = None
 
     def calc_fee(self):
-        if self.type == "BIKE":
-            pass
+        if self.exit_time != None:
+            total_time = self.exit_time - self.entry_time 
+            total_hours = total_time.total_seconds() / 3600 # convert time series to hrs 
+            if self.type == "BIKE":
+                return f"Total fee will be -> {total_hours*10}"
 
-        elif self.type == "CAR":
-            pass
+            elif self.type == "CAR":
+                return f"Total fee will be -> {total_hours*20}"
 
-        else:
-            pass
+            else:
+                return f"Total fee will be -> {total_hours*30}"
+
+    def exit_fun(self):
+        self.exit_time =  datetime.now()
+
+    def is_available(self):
+        pass
