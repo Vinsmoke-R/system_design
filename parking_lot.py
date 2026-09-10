@@ -3,8 +3,6 @@ from datetime import datetime
 import math
 
 vehicle_type = ["BIKE","CAR","TRUCK"]
-floors = 4 # each floor has 7 bikes 6 cars and 2 truck space = 15 
-floors = 4
 
 class Vehicle(ABC):
     def __init__(self,owner_name,num_plate):
@@ -32,7 +30,7 @@ class Truck(Vehicle):
 
 
 class ParkingLot:
-    def __init__(self, vehicle: Vehicle,floors: list[list[str]], no_floors:int):
+    def __init__(self, vehicle: Vehicle,floors: list[list[str]]):
         self.vehicle = vehicle
         self.num_plate = vehicle.num_plate
         self.name = vehicle.owner_name
@@ -40,34 +38,43 @@ class ParkingLot:
     def is_available(self,floors):
         type = self.vehicle.get_type()
         if type=="BIKE":
-            for i in floors:
+            for i in (len(self.floors)):
                 for j in range(0,7):
                     if floors[i][j]=="-":
                         print(f"There is a spot B{j+1} available for bike on floor {i+1}")
                         return True
 
         elif type == "CAR":
-            for i in floors:
+            for i in (len(self.floors)):
                 for j in range(7,13):
                     if floors[i][j]=="-":
                         print(f"There is a spot C{j+1} available for car on floor {i+1}")
                         return True
 
         elif type == "TRUCK":
-            for i in floors:
+            for i in (len(self.floors)):
                 for j in range(13,16):
                     if floors[i][j]=="-":
                         print(f"There is a spot T{j+1} available for Truck on floor {i+1}")
                         return True
-        return False
-    
-            
+        return False 
 
     def park(self,):
         pass
 
     def unpark(self):
         pass
+
+class floor:
+    def __init__(self,no_floors:int):
+        self.no_floors = no_floors
+
+    def parking(self):
+        floors = []
+
+        for i in range(self.no_floors):
+            floors.append(["-"] * 15)
+        return floors 
 
 class Parking_spot:
     def __init__(self,parking):
