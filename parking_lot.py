@@ -34,36 +34,71 @@ class ParkingLot:
         self.vehicle = vehicle
         self.num_plate = vehicle.num_plate
         self.name = vehicle.owner_name
+        self.floors = floors
 
-    def is_available(self,floors):
-        type = self.vehicle.get_type()
-        if type=="BIKE":
-            for i in (len(self.floors)):
+    def is_available(self):
+        vehicle_type = self.vehicle.get_type()
+        if vehicle_type == "BIKE":
+            for i in range(len(self.floors)):
                 for j in range(0,7):
-                    if floors[i][j]=="-":
+                    if self.floors[i][j]=="-":
                         print(f"There is a spot B{j+1} available for bike on floor {i+1}")
-                        return True
+                        return i,j
 
-        elif type == "CAR":
-            for i in (len(self.floors)):
+        elif vehicle_type == "CAR":
+            for i in range(len(self.floors)):
                 for j in range(7,13):
-                    if floors[i][j]=="-":
+                    if self.floors[i][j]=="-":
                         print(f"There is a spot C{j+1} available for car on floor {i+1}")
-                        return True
+                        return i,j
 
-        elif type == "TRUCK":
-            for i in (len(self.floors)):
-                for j in range(13,16):
-                    if floors[i][j]=="-":
+        elif vehicle_type == "TRUCK":
+            for i in range(len(self.floors)):
+                for j in range(13,15):
+                    if self.floors[i][j]=="-":
                         print(f"There is a spot T{j+1} available for Truck on floor {i+1}")
-                        return True
-        return False 
+                        return i,j
+        return None 
 
-    def park(self,):
-        pass
+    def park(self):
+        spot = self.find_available_spot()
+        if spot is None:
+            print("No parking spot available")
+            return
+        floor, position = spot
 
-    def unpark(self):
-        pass
+        ticket = Ticket()
+
+        vehicle_type = self.vehicle.get_type()
+
+        if vehicle_type == "BIKE":
+            self.floors[floor][position] = "B"
+        elif vehicle_type == "CAR":
+            self.floors[floor][position] = "C"
+        elif vehicle_type == "TRUCK":
+            self.floors[floor][position] = "T"
+
+        print(
+            f"{vehicle_type} parked at position {position + 1} "
+            f"on floor {floor + 1}"
+        )
+
+
+    def unpark(self,ticket):
+        floor = ticket.spot[0]
+        position = ticket.spot[1]
+
+        self.floors[floor][position] = "-"
+
+        ticket.exit_time = datetime.now()
+
+        print {
+            f"{ticket.vehicle.get_type()}"
+            f"{ticket.vehicle.num_plate} has left the parking lot"
+        }
+
+
+        
 
 class floor:
     def __init__(self,no_floors:int):
