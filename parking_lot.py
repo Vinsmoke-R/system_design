@@ -4,62 +4,15 @@ import math
 
 vehicle_type = ["BIKE","CAR","TRUCK"]
 floors = 4 # each floor has 7 bikes 6 cars and 2 truck space = 15 
-parking = {'floor_1' : {
-    "BIKE" : 7,
-    "CAR" : 6,
-    "TRUCK" :2
-},
-'floor_2' : {
-    "BIKE" : 7,
-    "CAR" : 6,
-    "TRUCK" :2
-},
-'floor_3' : {
-    "BIKE" : 7,
-    "CAR" : 6,
-    "TRUCK" :2
-},
-'floor_4' : {
-    "BIKE" : 7,
-    "CAR" : 6,
-    "TRUCK" :2
-},
-}
-
-class ParkingLot:
-    def __init__(self):
-        self.id = ""
-        self.name = ""
-        self.address = ""
-        self.floors = []
-
-class Parking_spot:
-    def __init__(self,parking,Vehicle):
-        self.parking = parking
-
-    def is_available(self):
-        pass
-
-class BikeParking(Parking_spot):
-    def __init__(self):
-        self.parking = parking
-
-    def is_available(self):
-        for i in parking:
-            if parking[i]["BIKE"]>0:
-                return True
-
-        return False
-
-
+floors = 4
 
 class Vehicle(ABC):
     def __init__(self,owner_name,num_plate):
         self.owner_name = owner_name
         self.num_plate = num_plate
 
-    @abstractmethod
-    def get_type(self):
+    @abstractmethod    
+    def get_type(self):    # this function can't be called by Vehicle class
         pass
 
     def __repr__(self):
@@ -76,6 +29,63 @@ class Car(Vehicle):
 class Truck(Vehicle):
     def get_type(self):
         return "TRUCK"
+
+
+class ParkingLot:
+    def __init__(self, vehicle: Vehicle,floors: list[list[str]], no_floors:int):
+        self.vehicle = vehicle
+        self.num_plate = vehicle.num_plate
+        self.name = vehicle.owner_name
+
+    def is_available(self,floors):
+        type = self.vehicle.get_type()
+        if type=="BIKE":
+            for i in floors:
+                for j in range(0,7):
+                    if floors[i][j]=="-":
+                        print(f"There is a spot B{j+1} available for bike on floor {i+1}")
+                        return True
+
+        elif type == "CAR":
+            for i in floors:
+                for j in range(7,13):
+                    if floors[i][j]=="-":
+                        print(f"There is a spot C{j+1} available for car on floor {i+1}")
+                        return True
+
+        elif type == "TRUCK":
+            for i in floors:
+                for j in range(13,16):
+                    if floors[i][j]=="-":
+                        print(f"There is a spot T{j+1} available for Truck on floor {i+1}")
+                        return True
+        return False
+    
+            
+
+    def park(self,):
+        pass
+
+    def unpark(self):
+        pass
+
+class Parking_spot:
+    def __init__(self,parking):
+        self.parking = parking
+
+    def is_available(self):
+        pass
+
+class BikeParking(Parking_spot):
+    def __init__(self):
+        self.parking = parking
+
+    def is_available(self):
+        for i in parking:
+            if parking[i]["BIKE"]>0:
+                return True
+
+        return False
 
 
 class Ticket():
