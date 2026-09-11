@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
 import math
+import time 
 
 vehicle_type = ["BIKE","CAR","TRUCK"]
 
@@ -30,14 +31,12 @@ class Truck(Vehicle):
 
 
 class ParkingLot:
-    def __init__(self, vehicle: Vehicle,floors: list[list[str]]):
-        self.vehicle = vehicle
-        self.num_plate = vehicle.num_plate
-        self.name = vehicle.owner_name
+    def __init__(self,floors):
         self.floors = floors
+        self.tickets = {}
 
-    def is_available(self):
-        vehicle_type = self.vehicle.get_type()
+    def is_available(self,vehicle : Vehicle):
+        vehicle_type = vehicle.get_type()
         if vehicle_type == "BIKE":
             for i in range(len(self.floors)):
                 for j in range(0,7):
@@ -60,74 +59,48 @@ class ParkingLot:
                         return i,j
         return None 
 
-    def park(self):
-        spot = self.find_available_spot()
+    def park(self,vehicle : Vehicle):
+        spot = self.is_available(vehicle)
         if spot is None:
             print("No parking spot available")
             return
         floor, position = spot
 
-        ticket = Ticket()
+        ticket = Ticket(vehicle)
+        ticket.spot = spot 
 
-        vehicle_type = self.vehicle.get_type()
-
-        if vehicle_type == "BIKE":
-            self.floors[floor][position] = "B"
-        elif vehicle_type == "CAR":
-            self.floors[floor][position] = "C"
-        elif vehicle_type == "TRUCK":
-            self.floors[floor][position] = "T"
-
-        print(
-            f"{vehicle_type} parked at position {position + 1} "
-            f"on floor {floor + 1}"
-        )
-
-
-    def unpark(self,ticket):
-        floor = ticket.spot[0]
-        position = ticket.spot[1]
-
-        self.floors[floor][position] = "-"
-
-        ticket.exit_time = datetime.now()
-
-        print {
-            f"{ticket.vehicle.get_type()}"
-            f"{ticket.vehicle.num_plate} has left the parking lot"
-        }
-
-
+        self.tickets[vehicle.num_plate] = ticket   # ← add to register
+    
+        self.floors[floor][position] = vehicle.get_type()[0]  # "B", "C", "T"
         
+        print(f"{vehicle.get_type()} parked at spot {position+1}, floor {floor+1}")
+        return ticket
 
-class floor:
+
+    def unpark(self, num_plate: str):            # ← take num_plate instead of ticket
+        ticket = self.tickets.pop(num_plate, None)  # ← remove from register + get ticket
+        
+        if ticket is None:
+            print("Ticket not found!")
+            return
+        
+        floor, position = ticket.spot
+        self.floors[floor][position] = "-"       # ← free the spot
+        
+        ticket.exit_time = datetime.now()        # ← set exit time
+        print(ticket.calc_fee())                 # ← calculate and show fee
+
+
+class Floor:
     def __init__(self,no_floors:int):
         self.no_floors = no_floors
 
-    def parking(self):
+    def create(self):
         floors = []
 
         for i in range(self.no_floors):
             floors.append(["-"] * 15)
         return floors 
-
-class Parking_spot:
-    def __init__(self,parking):
-        self.parking = parking
-
-    def is_available(self):
-        pass
-
-class BikeParking(Parking_spot):
-    def __init__(self):
-        self.parking = parking
-
-    def is_available(self):
-        for i in parking:
-            if parking[i]["BIKE"]>0:
-                return True
-
-        return False
 
 
 class Ticket():
@@ -146,16 +119,29 @@ class Ticket():
             total_time = self.exit_time - self.entry_time 
             total_hours = total_time.total_seconds() / 3600 # convert time series to hrs 
             if self.type == "BIKE":
-                return f"Total fee will be -> {total_hours*10}"
+                self.fee = round(total_hours*10,2)
+                return f"Total fee will be -> {self.fee}"
 
             elif self.type == "CAR":
-                return f"Total fee will be -> {total_hours*20}"
+                self.fee = round(total_hours*20,2)
+                return f"Total fee will be -> {self.fee}"
 
             else:
-                return f"Total fee will be -> {total_hours*30}"
+                self.fee = round(total_hours*30,2)
+                return f"Total fee will be -> {self.fee}"
 
-    def exit_fun(self):
-        self.exit_time =  datetime.now()
 
-    def is_available(self):
-        pass
+
+floors = Floor(4).create()
+lot = ParkingLot(floors)
+
+car = Car("RAJ","UP79X6626")
+bike = Bike("AMAN","UP79X1124")
+
+lot.park(car)
+lot.park(bike)
+
+time.sleep(10)
+
+lot.unpark("UP79X6626")
+lot.unpark("UP79X1124")
